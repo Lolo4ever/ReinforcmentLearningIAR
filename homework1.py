@@ -1,78 +1,83 @@
 
 import math
+import random
 import gym
 from gym import spaces, logger
 from gym.utils import seeding
 import numpy as np
 
 
-class homework1(gym.Env):
-    """
-    Description:
-        A cleaning robot in a fully observable environment. The robot cleaner makes decisions at each time
-        step. At each step the robot decides whether it should :
-            (1) actively search for area to clean
-            (2) remain stationary and wait
-            (3) go back to home base to recharge its battery. 
-    Observation:
-        Type: Discrete(4)
-        Num     Observation               Min                     Max
-        0       Robot Position           (0,0)                    (9,9)
-        1       Battery                    0                       100
-        2       Dirtyness[x,y]             0                        5  
-    Actions:
-        Type: Discrete(2)
-        Num   Action
-        0     Turn left
-        1     Turn right
-        2     Move foward
-        3     Wait
-        Note: The floor is automatically cleaned after the robot goes throw it.
-    Reward:
-        The Dirtyness level of the square the robot's at. 
-        0.5 if it is at home
-    Starting State:
-        All observations are assigned a uniform random value in [-0.05..0.05]
-    Episode Termination:
-        The robot runs out of battery.
-        Episode length is greater than 20000.
-    Solved Requirements:
-        NOT
-    """
+
+"""
+Description:
+    A cleaning robot in a fully observable environment. The robot cleaner makes decisions at each time
+    step. At each step the robot decides whether it should :
+        (1) actively search for area to clean
+        (2) remain stationary and wait
+        (3) go back to home base to recharge its battery. 
+Observation:
+    Type: Discrete(4)
+    Num     Observation               Min                     Max
+    0       Robot Position           (0,0)                    (9,9)
+    1       Battery                    0                       100
+    2       Dirtyness[x,y]             0                        5  
+Actions:
+    Type: Discrete(2)
+    Num   Action
+    0     Turn left
+    1     Turn right
+    2     Move foward
+    3     Wait
+    Note: The floor is automatically cleaned after the robot goes throw it.
+Reward:
+    The Dirtyness level of the square the robot's at. 
+    0.5 if it is at home
+Starting State:
+    All observations are assigned a uniform random value in [-0.05..0.05]
+Episode Termination:
+    The robot runs out of battery.
+    Episode length is greater than 20000.
+Solved Requirements:
+    NOT
+"""
+
+
+def format_row(row):
+    return '|' + '|'.join('{0:^5}'.format(x) for x in row) + '|'
+
+def format_board(board):
+    # for a single list with 9 elements uncomment the following line:
+    # return '\n\n'.join(format_row(row) for row in zip(*[iter(board)]*3))
+    # for a 3x3 list:
+    return '\n\n'.join(format_row(row) for row in board)
+
+def step():
+    pass
+
+def room_initialization(x,y):
+    room = [[0 for i in range(x)] for j in range(y)] 
+    for i in range(x):
+        for j in range(y):
+            room[i][j] = random.randint(0,5)
+    room[0][2] = float('-inf')
+    room[1][2] = float('-inf')
+    room[2][2] = float('-inf')
+    room[3][2] = float('-inf')
+    room[HOMECOORD[0]][HOMECOORD[1]] = "X"
+    return room
+
+
+
+if __name__ == "__main__":
     #Environment Variables
     #Room Size
     X = 10
     Y = 10
     #Home Cooridantes
-    HOMECOORD = (0,4)
-    
+    HOMECOORD = (0,0)
 
-    def format_row(row):
-        return '|' + '|'.join('{0:^10s}'.format(x) for x in row) + '|'
-
-    def format_board(board):
-        return '\n\n'.join(format_row(row) for row in board)
-
-    def rendering():
-        pass
-
-    def step():
-        pass
-
-    def room_initialization(x,y):
-        room = [x][y]
-        for i in range(x):
-            for j in range(y):
-                room[x][y] = math.randint(0,5)
-        room[0][2] = float('-inf')
-        room[1][2] = float('-inf')
-        room[2][2] = float('-inf')
-        room[3][2] = float('-inf')
-
-
-
-    if __name__ == "__main__":
-        room = room_initialization(X,Y)
+    room = room_initialization(X,Y)
+    print(format_board(room))
 
 
 
