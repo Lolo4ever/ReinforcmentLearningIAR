@@ -47,6 +47,11 @@ class homework1(gym.Env):
     HOMECOORD = (0,4)
     
 
+    def format_row(row):
+        return '|' + '|'.join('{0:^10s}'.format(x) for x in row) + '|'
+
+    def format_board(board):
+        return '\n\n'.join(format_row(row) for row in board)
 
     def rendering():
         pass
@@ -54,11 +59,20 @@ class homework1(gym.Env):
     def step():
         pass
 
-    def room_initialization():
-        pass
+    def room_initialization(x,y):
+        room = [x][y]
+        for i in range(x):
+            for j in range(y):
+                room[x][y] = math.randint(0,5)
+        room[0][2] = float('-inf')
+        room[1][2] = float('-inf')
+        room[2][2] = float('-inf')
+        room[3][2] = float('-inf')
+
+
 
     if __name__ == "__main__":
-        pass
+        room = room_initialization(X,Y)
 
 
 
