@@ -5,6 +5,7 @@ import gym
 from gym import spaces, logger
 from gym.utils import seeding
 import numpy as np
+import time
 
 
 
@@ -66,7 +67,45 @@ def room_initialization(x,y):
     room[HOMECOORD[0]][HOMECOORD[1]] = "X"
     return room
 
+def move_forward(robot, direction, room):
+    if direction == 'left' and robot[1] != 0 and room[robot[0]][robot[1] - 1] != float('-inf'):
+        room[robot[0]][robot[1]] = 0
+        room[robot[0]][robot[1] - 1] = "R"
+        return (robot[0], robot[1] - 1)
+    if direction == 'right' and robot[1] != 9 and room[robot[0]][robot[1] + 1] != float('-inf'):
+        room[robot[0]][robot[1]] = 0
+        room[robot[0]][robot[1] + 1] = "R"
+        return (robot[0], robot[1] + 1)
+    if direction == 'up' and robot[0] != 0 and room[robot[0] - 1][robot[1]] != float('-inf'):
+        room[robot[0]][robot[1]] = 0
+        room[robot[0] - 1][robot[1]] = "R"
+        return (robot[0] - 1, robot[1])
+    if direction == 'down' and robot[0] != 9 and room[robot[0] + 1][robot[1]] != float('-inf'):
+        room[robot[0]][robot[1]] = 0
+        room[robot[0] + 1][robot[1]] = "R"
+        return (robot[0] + 1, robot[1])
+    else:
+        return robot
 
+def turn_left(direction):
+    if direction == 'left':
+        return 'down'
+    if direction == 'down':
+        return 'right'
+    if direction == 'right':
+        return 'up'
+    if direction == 'up':
+        return 'left'
+
+def turn_right(direction):
+    if direction == 'left':
+        return 'up'
+    if direction == 'up':
+        return 'right'
+    if direction == 'right':
+        return 'down'
+    if direction == 'down':
+        return 'left'
 
 if __name__ == "__main__":
     #Environment Variables
@@ -75,19 +114,30 @@ if __name__ == "__main__":
     Y = 10
     #Home Cooridantes
     HOMECOORD = (0,0)
+    robot = (0,0)
+    direction = 'right'
 
     room = room_initialization(X,Y)
     print(format_board(room))
+    print("\n")
+    i = 0
 
-
-
-
-
-
-
-
-
-
+    while True:
+        a = random.randint(0, 2)
+        if a == 0:
+            robot = move_forward(robot, direction, room)
+        if a == 1:
+            direction = turn_left(direction)
+        if a == 2:
+            direction = turn_right(direction)
+        
+        print(format_board(room))
+        print(robot)
+        i+=1
+        print(i)
+        print("\n")
+        time.sleep(0.2)
+    
 
 
 
