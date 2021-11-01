@@ -1,13 +1,11 @@
-
 import math
 import random
-import gym
-from gym import spaces, logger
-from gym.utils import seeding
+# import gym
+# from gym import spaces, logger
+# from gym.utils import seeding
 import numpy as np
 import time
-
-
+import math
 
 """
 Description:
@@ -43,8 +41,97 @@ Solved Requirements:
 """
 
 
+class WallE:
+    """
+    Class that define the robot position and direction
+    """
+
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+        self.direction = "up"
+
+    def get_coordinates(self):
+        return self.x, self.y
+
+    def move_forward(self):
+        if self.direction == "up":
+            self.y += 1
+        if self.direction == "down":
+            self.y -= 1
+        if self.direction == "right":
+            self.x += 1
+        if self.direction == "left":
+            self.x -= 1
+
+    def turn_left(self):
+        if self.direction == 'left':
+            return 'down'
+        if self.direction == 'down':
+            return 'right'
+        if self.direction == 'right':
+            return 'up'
+        if self.direction == 'up':
+            return 'left'
+
+    def turn_right(self):
+        if self.direction == 'left':
+            return 'up'
+        if self.direction == 'up':
+            return 'right'
+        if self.direction == 'right':
+            return 'down'
+        if self.direction == 'down':
+            return 'left'
+
+
+class Board:
+    """
+    define a board
+    """
+
+    def __init__(self, height, length):
+        self.height = height
+        self.length = length
+        self.matrix = np.zeros((height, length))  # main board
+        self.robot = None
+
+    def addRobot(self, robot: WallE, x, y):
+        self.matrix[x, y] = 1
+        self.robot = robot
+        self.robot.x = x
+        self.robot.y = y
+
+    def room_initialization(self):
+        for i in range(self.height):
+            for j in range(self.length):
+                self.matrix[i, j] = random.randint(0, 5)
+
+        # add wall
+        for index in range(4):
+            self.matrix[index, 2] = np.inf
+
+    def __str__(self):
+        return str(self.matrix)
+
+    def draw_map(self):
+        map = ""
+        for y in range(self.height):
+            for x in range(self.length):
+                if self.robot is not None and y == self.robot.y and x == self.robot.x:  # wall
+                    map += " 🤖"
+                elif self.matrix[y, x] == np.inf:  # wall
+                    map += " 🧱"
+                else:
+                    map += "  "
+            map += "\n"
+
+        print(map)
+
+
 def format_row(row):
     return '|' + '|'.join('{0:^5}'.format(x) for x in row) + '|'
+
 
 def format_board(board):
     # for a single list with 9 elements uncomment the following line:
@@ -52,20 +139,23 @@ def format_board(board):
     # for a 3x3 list:
     return '\n\n'.join(format_row(row) for row in board)
 
+
 def step():
     pass
 
-def room_initialization(x,y):
-    room = [[0 for i in range(x)] for j in range(y)] 
+
+def room_initialization(x, y):
+    room = [[0 for i in range(x)] for j in range(y)]
     for i in range(x):
         for j in range(y):
-            room[i][j] = random.randint(0,5)
+            room[i][j] = random.randint(0, 5)
     room[0][2] = float('-inf')
     room[1][2] = float('-inf')
     room[2][2] = float('-inf')
     room[3][2] = float('-inf')
     room[HOMECOORD[0]][HOMECOORD[1]] = "X"
     return room
+
 
 def move_forward(robot, direction, room):
     if direction == 'left' and robot[1] != 0 and room[robot[0]][robot[1] - 1] != float('-inf'):
@@ -87,62 +177,41 @@ def move_forward(robot, direction, room):
     else:
         return robot
 
-def turn_left(direction):
-    if direction == 'left':
-        return 'down'
-    if direction == 'down':
-        return 'right'
-    if direction == 'right':
-        return 'up'
-    if direction == 'up':
-        return 'left'
-
-def turn_right(direction):
-    if direction == 'left':
-        return 'up'
-    if direction == 'up':
-        return 'right'
-    if direction == 'right':
-        return 'down'
-    if direction == 'down':
-        return 'left'
 
 if __name__ == "__main__":
-    #Environment Variables
-    #Room Size
+    # Environment Variables
+    # Room Size
     X = 10
     Y = 10
-    #Home Cooridantes
-    HOMECOORD = (0,0)
-    robot = (0,0)
-    direction = 'right'
+    # Home Cooridantes
+    HOMECOORD = (0, 0)
+    robot = WallE()
+    room = Board(X, Y)
+    room.room_initialization()
 
-    room = room_initialization(X,Y)
-    print(format_board(room))
-    print("\n")
+    print(room)
+    room.draw_map()
+
+    # room = room_initialization(X, Y)
+    # print(format_board(room))
+    # print("\n")
     i = 0
 
-    while True:
-        a = random.randint(0, 2)
-        if a == 0:
-            robot = move_forward(robot, direction, room)
-        if a == 1:
-            direction = turn_left(direction)
-        if a == 2:
-            direction = turn_right(direction)
-        
-        print(format_board(room))
-        print(robot)
-        i+=1
-        print(i)
-        print("\n")
-        time.sleep(0.2)
-    
-
-
-
-
-
+    # while True:
+    #     a = random.randint(0, 2)
+    #     if a == 0:
+    #         robot = move_forward(robot, direction, room)
+    #     if a == 1:
+    #         direction = turn_left(direction)
+    #     if a == 2:
+    #         direction = turn_right(direction)
+    #
+    #     print(format_board(room))
+    #     print(robot)
+    #     i += 1
+    #     print(i)
+    #     print("\n")
+    #     time.sleep(0.2)
 
 """
 
