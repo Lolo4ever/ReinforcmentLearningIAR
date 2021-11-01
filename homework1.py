@@ -43,6 +43,7 @@ Solved Requirements:
 """
 
 ENERGY_PER_MOVE = 5
+ROOM_SIZE = (10, 10)
 
 
 class DeadBatterError(Exception):
@@ -204,13 +205,9 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s--[%(levelname)s]: %(message)s',
                         level=logging.DEBUG if args.verbose else logging.INFO)
     # Environment Variables
-    # Room Size
-    X = 10
-    Y = 10
     robot = WallE()
-    room = Board(X, Y)
+    room = Board(*ROOM_SIZE)
     room.start_simulation(random_engine)
-    i = 0
 
 """
 
