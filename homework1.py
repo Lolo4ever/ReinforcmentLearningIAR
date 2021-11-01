@@ -197,6 +197,15 @@ def random_engine(board: Board):
     return random.choice(["move_forward", "turn_right", "turn_left"])
 
 
+def super_engine(board: Board):
+    """ TODO
+    :param board: Board object with robot that describe the current state of the board and the robots position
+    :return action: one of the following commands: move_forward turn_right turn_left wait that going to be executed
+    before next loop
+    """
+    pass
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true")
