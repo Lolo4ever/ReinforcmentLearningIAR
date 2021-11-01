@@ -132,7 +132,6 @@ class Board:
 
         getattr(self.robot, action)()
         # check if robot out of room
-        print(self.robot.get_coordinates())
         if not (0 <= self.robot.x < 10 and 0 <= self.robot.y < 10):  # out of room
             self.robot.x = old_state[0]
             self.robot.y = old_state[1]
@@ -141,11 +140,14 @@ class Board:
             self.robot.x = old_state[0]
             self.robot.y = old_state[1]
             logging.debug(f"collision with  wall avoided...")
-        self.clean_tile(self.robot.x, self.robot.y)
+        cleaned = self.clean_tile(self.robot.x, self.robot.y)
         logging.debug(f"robot in {self.robot.get_coordinates()}, {self.robot.direction}")
+        return cleaned
         
     def clean_tile(self, x , y):
+        cleaned = self.matrix[y,x]
         self.matrix[y,x] = 0
+        return cleaned
 
     def is_room_clean(self):
         for row in self.matrix:
@@ -185,6 +187,7 @@ class Board:
             logging.debug("Wall-E added to the map")
             logging.info("Finished initializing environment, starting loop...")
             self.draw_map()
+            rewards = []
 
             iteration_count = 0
             while not self.is_room_clean():
@@ -192,8 +195,9 @@ class Board:
                 action = engine(self)
                 logging.debug(f"engine decided: {action}, executing...")
 
-                room.move(action)
-                logging.debug(f"finished execution")
+                reward = room.move(action)
+                rewards.append(reward)
+                logging.debug(f"finished execution with reward: {reward}, total rewards: {sum(rewards)}")
 
                 if iteration_count > MAX_ITERATION:
                     logging.info(f"max iteration reached")
