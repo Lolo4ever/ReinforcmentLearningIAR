@@ -1,3 +1,5 @@
+import argparse
+import logging
 import math
 import random
 # import gym
@@ -129,6 +131,23 @@ class Board:
         for index in range(4):
             self.matrix[index, 2] = np.inf
 
+    def move(self, action):
+        old_state = self.robot.x, self.robot.y
+
+        getattr(self.robot, action)()
+        # check if robot out of room
+        if not (0 < self.robot.x <= 10 and 0 < self.robot.y <= 10):  # out of room
+            self.robot.x = old_state[0]
+            self.robot.y = old_state[0]
+            logging.debug(f"robot out of room ")
+
+    def is_room_clean(self):
+        for row in self.matrix:
+            for tile in row:
+                if tile != np.inf or tile != 0:
+                    return False
+        return True
+
     def __str__(self):
         return str(self.matrix)
 
@@ -145,86 +164,53 @@ class Board:
             map += "\n"
 
         print(map)
+        if self.robot is not None:
+            print(f"robot direction: {self.robot.direction}")
+
+    def start_simulation(self, engine):
+        try:
+            logging.info("starting simulation...")
+            robot = WallE()
+            logging.debug("initializing room...")
+            self.room_initialization()
+            logging.debug("room initialized")
+            self.addRobot(robot, 0, 0)
+            logging.debug("Wall-E added to the map")
+            logging.info("Finished initializing environment, starting loop...")
+
+            iteration_count = 0
+            while not self.is_room_clean():
+                logging.debug(f"staring iteration {iteration_count}...")
+                action = engine(self)
+                logging.debug(f"engine decided: {action}, executing...")
+
+                room.move(action)
+                logging.debug(f"finished execution")
+                time.sleep(0.2)
+
+        except DeadBatterError:
+            logging.error("Battery dead ")
 
 
-def format_row(row):
-    return '|' + '|'.join('{0:^5}'.format(x) for x in row) + '|'
-
-
-def format_board(board):
-    # for a single list with 9 elements uncomment the following line:
-    # return '\n\n'.join(format_row(row) for row in zip(*[iter(board)]*3))
-    # for a 3x3 list:
-    return '\n\n'.join(format_row(row) for row in board)
-
-
-def step():
-    pass
-
-
-def room_initialization(x, y):
-    room = [[0 for i in range(x)] for j in range(y)]
-    for i in range(x):
-        for j in range(y):
-            room[i][j] = random.randint(0, 5)
-    room[0][2] = float('-inf')
-    room[1][2] = float('-inf')
-    room[2][2] = float('-inf')
-    room[3][2] = float('-inf')
-    room[HOMECOORD[0]][HOMECOORD[1]] = "X"
-    return room
-
-
-def move_forward(robot, direction, room):
-    if direction == 'left' and robot[1] != 0 and room[robot[0]][robot[1] - 1] != float('-inf'):
-        room[robot[0]][robot[1]] = 0
-        room[robot[0]][robot[1] - 1] = "R"
-        return (robot[0], robot[1] - 1)
-    if direction == 'right' and robot[1] != 9 and room[robot[0]][robot[1] + 1] != float('-inf'):
-        room[robot[0]][robot[1]] = 0
-        room[robot[0]][robot[1] + 1] = "R"
-        return (robot[0], robot[1] + 1)
-    if direction == 'up' and robot[0] != 0 and room[robot[0] - 1][robot[1]] != float('-inf'):
-        room[robot[0]][robot[1]] = 0
-        room[robot[0] - 1][robot[1]] = "R"
-        return (robot[0] - 1, robot[1])
-    if direction == 'down' and robot[0] != 9 and room[robot[0] + 1][robot[1]] != float('-inf'):
-        room[robot[0]][robot[1]] = 0
-        room[robot[0] + 1][robot[1]] = "R"
-        return (robot[0] + 1, robot[1])
-    else:
-        return robot
+def random_engine(board: Board):
+    return random.choice(["move_forward", "turn_right", "turn_left"])
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true")
+    args = parser.parse_args()
+
+    logging.basicConfig(format='%(asctime)s--[%(levelname)s]: %(message)s',
+                        level=logging.DEBUG if args.verbose else logging.INFO)
     # Environment Variables
     # Room Size
     X = 10
     Y = 10
     robot = WallE()
     room = Board(X, Y)
-    room.room_initialization()
-
-    print(room)
-    room.addRobot(robot, 0, 0)
-    room.draw_map()
+    room.start_simulation(random_engine)
     i = 0
-
-    # while True:
-    #     a = random.randint(0, 2)
-    #     if a == 0:
-    #         robot = move_forward(robot, direction, room)
-    #     if a == 1:
-    #         direction = turn_left(direction)
-    #     if a == 2:
-    #         direction = turn_right(direction)
-    #
-    #     print(format_board(room))
-    #     print(robot)
-    #     i += 1
-    #     print(i)
-    #     print("\n")
-    #     time.sleep(0.2)
 
 """
 
