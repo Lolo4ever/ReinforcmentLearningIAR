@@ -30,7 +30,7 @@ Actions:
     Note: The floor is automatically cleaned after the robot goes throw it.
 Reward:
     The Dirtyness level of the square the robot's at. 
-    0.5 if it is at home
+    0.5 if it is at home ???
 Starting State:
     All observations are assigned a uniform random value in [-0.05..0.05]
 Episode Termination:
@@ -39,6 +39,12 @@ Episode Termination:
 Solved Requirements:
     NOT
 """
+
+ENERGY_PER_MOVE = 5
+
+
+class DeadBatterError(Exception):
+    pass
 
 
 class WallE:
@@ -50,9 +56,15 @@ class WallE:
         self.x = 0
         self.y = 0
         self.direction = "up"
+        self.battery = 100
 
     def get_coordinates(self):
         return self.x, self.y
+
+    def consume_energy(self):
+        self.battery -= ENERGY_PER_MOVE
+        if self.battery <= 0:
+            raise DeadBatterError
 
     def move_forward(self):
         if self.direction == "up":
@@ -84,6 +96,9 @@ class WallE:
         if self.direction == 'down':
             return 'left'
 
+    def wait(self):
+        pass
+
 
 class Board:
     """
@@ -93,7 +108,7 @@ class Board:
     def __init__(self, height, length):
         self.height = height
         self.length = length
-        self.matrix = np.zeros((height, length))  # main board
+        self.matrix = np.zeros((height, length))  # dirtiness board
         self.robot = None
 
     def addRobot(self, robot: WallE, x, y):
@@ -183,18 +198,13 @@ if __name__ == "__main__":
     # Room Size
     X = 10
     Y = 10
-    # Home Cooridantes
-    HOMECOORD = (0, 0)
     robot = WallE()
     room = Board(X, Y)
     room.room_initialization()
 
     print(room)
+    room.addRobot(robot, 0, 0)
     room.draw_map()
-
-    # room = room_initialization(X, Y)
-    # print(format_board(room))
-    # print("\n")
     i = 0
 
     # while True:
