@@ -67,6 +67,7 @@ class WallE:
             raise DeadBatterError
 
     def move_forward(self):
+        self.consume_energy()
         if self.direction == "up":
             self.y += 1
         if self.direction == "down":
@@ -77,6 +78,7 @@ class WallE:
             self.x -= 1
 
     def turn_left(self):
+        self.consume_energy()
         if self.direction == 'left':
             return 'down'
         if self.direction == 'down':
@@ -87,6 +89,7 @@ class WallE:
             return 'left'
 
     def turn_right(self):
+        self.consume_energy()
         if self.direction == 'left':
             return 'up'
         if self.direction == 'up':
@@ -97,7 +100,7 @@ class WallE:
             return 'left'
 
     def wait(self):
-        pass
+        self.consume_energy()
 
 
 class Board:
