@@ -228,6 +228,30 @@ def super_engine(board: Board):
     """
     pass
 
+def generate_states():
+    states = []
+    for i in range(10):
+        for j in range(10):
+            for k in range(0, 100, 5):
+                states.append((i,j,k))
+    return states
+
+def dynamic_prog(board: Board, robot: WallE):
+    V_function = []
+    states = generate_states()
+    for i in range(100):
+        for s in states:
+            states_prime = 
+            pass
+
+def sum_dynamic_prog(s, states):
+    for s_prime in states:
+        
+    pass
+
+
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true")
