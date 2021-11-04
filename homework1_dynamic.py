@@ -190,6 +190,8 @@ class Board:
             logging.info("Finished initializing environment, starting loop...")
             self.draw_map()
             rewards = []
+            states = generate_states()
+            V = np.zeros(len(states))
 
             iteration_count = 0
             while not self.is_room_clean():
@@ -233,21 +235,20 @@ def generate_states():
     for i in range(10):
         for j in range(10):
             for k in range(0, 100, 5):
-                states.append((i,j,k))
+                for l in range(6):
+                    states.append((i,j,k,l))
     return states
 
 def dynamic_prog(board: Board, robot: WallE):
-    V_function = []
     states = generate_states()
     for i in range(100):
         for s in states:
-            states_prime = 
+            # states_prime = 
             pass
 
 def sum_dynamic_prog(s, states):
     for s_prime in states:
-        
-    pass
+        pass
 
 
 
